@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Nossa História de Amor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- Swiper.js para o Carrossel -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <style>
+        :root {
+            /* Tema Dark com Roxo e Branco */
+            --bg-color: #121212;      /* Fundo escuro, quase preto */
+            --text-color: #FFFFFF;    /* Texto principal branco */
+            --primary-color: #A78BFA; /* Roxo vibrante (lilás) */
+            --secondary-color: #E5E7EB; /* Cinza claro/branco para títulos e destaques */
+            --card-bg: rgba(29, 29, 29, 0.8); /* Fundo dos cards escuro e semitransparente */
+        }
+
+        body {
+            /* Gradiente sutil para o fundo escuro */
+            background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #121212);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .fade-in {
+            animation: fadeIn 1.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .fade-in-delay-1 { animation-delay: 0.2s; }
+        .fade-in-delay-2 { animation-delay: 0.4s; }
+        .fade-in-delay-3 { animation-delay: 0.6s; }
+        .fade-in-delay-4 { animation-delay: 0.8s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #petals-container {
+            position: fixed; /* Garante que os emojis fiquem fixos na tela durante a rolagem */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Fica atrás de todo o conteúdo */
+            pointer-events: none; /* Impede que os emojis interfiram com cliques */
+        }
+
+        .petal {
+            position: absolute;
+            font-size: 24px; /* Tamanho base do emoji */
+            opacity: 0.7;
+            animation: falling linear infinite;
+        }
+
+        @keyframes falling {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .message-box {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.5s;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .gallery-item img {
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* --- Estilos do Modal de Imagem (Lightbox) --- */
+        #image-modal {
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 110;
+        }
+        #image-modal-content {
+            max-width: 90vw;
+            max-height: 85vh;
+        }
+        #image-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        /* --- Ajuste para imagem da linha do tempo --- */
+        .timeline-image {
+            aspect-ratio: 1 / 1; /* Força o formato quadrado */
+            object-fit: cover;   /* Garante que a imagem preencha o espaço sem distorcer */
+            cursor: pointer;
+        }
+
+        /* --- Estilos da Linha do Tempo --- */
+        .timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            background-color: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1.5px;
+        }
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .timeline-container.left { left: 0; }
+        .timeline-container.right { left: 50%; }
+
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: white;
+            border: 4px solid var(--primary-color);
+            top: 25px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .timeline-container.right::after { left: -10px; }
+        .timeline-content {
+            padding: 20px;
+            background-color: var(--card-bg);
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        /* Responsivo para a linha do tempo */
+        @media screen and (max-width: 768px) {
+            .timeline::after { left: 20px; }
+            .timeline-container { width: 100%; padding-left: 60px; padding-right: 15px; }
+            .timeline-container.right { left: 0%; }
+            .timeline-container.left::after, .timeline-container.right::after { left: 10px; }
+        }
+        /* Classe para esconder itens da timeline */
+        .timeline-hidden {
+            display: none;
+        }
+
+
+        /* --- Estilos do Carrossel (Swiper) --- */
+        .swiper-container {
+            width: 100%;
+            padding-top: 20px;
+            padding-bottom: 50px; /* Espaço para paginação */
+        }
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+            width: 300px;
+            height: 400px; /* Altura fixa para criar o retângulo */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .swiper-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Garante que a imagem preencha o slide sem distorcer */
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: var(--primary-color);
+        }
+        .swiper-pagination-bullet-active {
+            background-color: var(--primary-color);
+        }
+
+        /* --- Efeito de Borda Giratória para o Contador --- */
+        .spinning-border-box {
+            position: relative; /* Necessário para posicionar a borda */
+            overflow: hidden; /* Garante que a borda fique dentro do raio do card */
+        }
+
+        .spinning-border-box::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%; /* Maior que o container para a rotação ser suave nas bordas */
+            height: 150%;
+            z-index: -1; /* Fica atrás do conteúdo do card, mas acima do fundo */
+            
+            /* Cria um gradiente cônico que parece uma linha */
+            background: conic-gradient(
+                transparent, 
+                transparent, 
+                transparent, 
+                var(--primary-color)
+            );
+            
+            /* Animação de rotação */
+            animation: spin-border 6s linear infinite;
+        }
+
+        /* Adiciona uma camada para mascarar o centro da animação */
+        .spinning-border-box::after {
+            content: '';
+            position: absolute;
+            top: 2px; /* Espessura da borda */
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background-color: #1D1D1D; /* Cor sólida do fundo do card */
+            border-radius: 22px; /* Um pouco menor que o border-radius do card */
+            z-index: -1; /* Fica entre a borda giratória e o conteúdo */
+        }
+
+        @keyframes spin-border {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* --- Correção do ID do contador para o JS --- */
+        #counter-section {
+           gap: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="petals-container"></div>
+
+    <!-- Modal de Mensagens -->
+    <div id="message-box" class="hidden">
+        <div class="rounded-xl p-8 max-w-md mx-auto shadow-2xl text-center m-4" style="background-color: #1D1D1D;">
+            <h2 id="message-title" class="text-3xl font-serif font-bold mb-4" style="color: var(--primary-color);"></h2>
+            <p id="message-content" class="text-gray-700 mb-6"></p>
+            <button onclick="closeMessage()"
+                class="text-white px-6 py-2 rounded-full hover:opacity-80 transition" style="background-color: var(--secondary-color);">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Imagem (Lightbox) -->
+    <div id="image-modal" class="hidden fixed top-0 left-0 w-full h-full items-center justify-center">
+        <span id="image-modal-close">&times;</span>
+        <img id="image-modal-content" class="mx-auto">
+    </div>
+
+
+    <main class="container mx-auto px-6 py-16">
+        <!-- Player de Música Customizado -->
+        <section id="music-player" class="max-w-sm mx-auto backdrop-blur-md rounded-xl shadow-lg p-6 mb-16 fade-in flex flex-col items-center" style="background-color: var(--card-bg);">
+            <img id="album-art" class="w-full aspect-square object-cover rounded-lg shadow-md mb-4" src="/uploads/capa.jpg" alt="Capa do Álbum">
+            <div class="text-center">
+                <p id="song-title" class="text-xl font-bold truncate" style="color: var(--secondary-color);">Carregando...</p>
+                <p id="song-artist" class="text-sm text-gray-400 truncate mb-4">Aguarde</p>
+            </div>
+            
+            <div>
+                <input id="seek-bar" type="range" value="0" class="w-full h-1 mb-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" style="accent-color: var(--primary-color);">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span id="current-time">0:00</span>
+                    <span id="total-duration">0:00</span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center space-x-6 mt-4">
+                <button id="prev-btn" class="text-2xl text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
+                </button>
+                <button id="play-pause-btn" class="p-3 rounded-full text-white" style="background-color: var(--primary-color);">
+                    <svg xmlns="http://www.w3.org/2000/svg" id="play-icon" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" id="pause-icon" class="h-8 w-8 hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                </button>
+                <button id="next-btn" class="text-2xl text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Cabeçalho -->
+        <header class="text-center mb-20">
+            <h1 class="text-5xl md:text-7xl font-serif font-bold mb-4 fade-in" style="color: var(--secondary-color);">Nossa História de Amor</h1>
+            <p class="text-lg fade-in fade-in-delay-1">Contando cada segundo desde 25 de Maio de 2025</p>
+        </header>
+
+        <!-- Contador -->
+        <section id="counter-section" class="spinning-border-box backdrop-blur-md rounded-2xl shadow-lg p-8 md:p-12 mb-20 fade-in fade-in-delay-2" style="background-color: var(--card-bg);">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 text-center">
+                <!-- Anos -->
+                <div class="flex flex-col items-center">
+                    <span id="years" class="text-4xl md:text-5xl font-bold" style="color: var(--primary-color);">0</span>
+                    <span class="text-sm uppercase tracking-wider mt-2" style="color: var(--secondary-color);">Anos</span>
+                </div>
+                <!-- Meses -->
+                <div class="flex flex-col items-center">
+                    <span id="months" class="text-4xl md:text-5xl font-bold" style="color: var(--primary-color);">0</span>
+                    <span class="text-sm uppercase tracking-wider mt-2" style="color: var(--secondary-color);">Meses</span>
+                </div>
+                <!-- Dias -->
+                <div class="flex flex-col items-center">
+                    <span id="days" class="text-4xl md:text-5xl font-bold" style="color: var(--primary-color);">0</span>
+                    <span class="text-sm uppercase tracking-wider mt-2" style="color: var(--secondary-color);">Dias</span>
+                </div>
+                <!-- Horas -->
+                <div class="flex flex-col items-center">
+                    <span id="hours" class="text-4xl md:text-5xl font-bold" style="color: var(--primary-color);">0</span>
+                    <span class="text-sm uppercase tracking-wider mt-2" style="color: var(--secondary-color);">Horas</span>
+                </div>
+                <!-- Minutos -->
+                <div class="flex flex-col items-center">
+                    <span id="minutes" class="text-4xl md:text-5xl font-bold" style="color: var(--primary-color);">0</span>
+                    <span class="text-sm uppercase tracking-wider mt-2" style="color: var(--secondary-color);">Minutos</span>
+                </div>
+                <!-- Segundos -->
+                <div class="flex flex-col items-center">
+                    <span id="seconds" class="text-4xl md:text-5xl font-bold" style="color: var(--primary-color);">0</span>
+                    <span class="text-sm uppercase tracking-wider mt-2" style="color: var(--secondary-color);">Segundos</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mensagem de Amor -->
+        <section class="text-center mb-20 fade-in fade-in-delay-3">
+             <p class="text-xl md:text-2xl font-serif italic leading-relaxed max-w-3xl mx-auto">
+                "Cada momento ao seu lado é como um suspiro tranquilo no meio do caos do mundo. Você me acalma, me inspira e me mostra que amar é construir, cuidar e crescer juntos. Meu coração sempre encontra o caminho de volta para você."
+            </p>
+        </section>
+
+        <!-- Linha do Tempo -->
+        <section class="fade-in fade-in-delay-4">
+            <h2 class="text-4xl font-serif font-bold text-center mb-16" style="color: var(--secondary-color);">Nossa Linha do Tempo</h2>
+            <div class="timeline">
+                <div class="timeline-container left">
+                    <div class="timeline-content">
+                        <h3 class="font-bold text-lg" style="color: var(--secondary-color);">23 de Maio, 2025</h3>
+                        <p class="text-sm italic mb-2" style="color: var(--primary-color);">Antes de tudo</p>
+                        <img src="./uploads/31.jpg" alt="O Início" class="timeline-image rounded-md mb-2 w-full">
+                        <p>O dia que saimos juntos antes de saber o quanto agente ia se amar ❤️</p>
+                    </div>
+                </div>
+                <!-- Item 1 -->
+                <div class="timeline-container left">
+                    <div class="timeline-content">
+                        <h3 class="font-bold text-lg" style="color: var(--secondary-color);">25 de Maio, 2025</h3>
+                        <p class="text-sm italic mb-2" style="color: var(--primary-color);">O Início de Tudo</p>
+                        <img src="./uploads/30.jpg" alt="O Início" class="timeline-image rounded-md mb-2 w-full">
+                        <p>Melhor dia da minha vida, nunca vou esquecer quando agente começou a ficar 🥰</p>
+                    </div>
+                </div>
+                <div class="timeline-container right timeline-hidden">
+                    <div class="timeline-content">
+                        <h3 class="font-bold text-lg" style="color: var(--secondary-color);">12 de Junho, 2025</h3>
+                        <p class="text-sm italic mb-2" style="color: var(--primary-color);">Dia dos namorados</p>
+                        <img src="./uploads/3.jpg" alt="Primeira Viagem" class="timeline-image rounded-md mb-2 w-full">
+                        <p>Meu primeiro dia dos namorandos ao lado de uma pessoa incrivel 💕</p>
+                    </div>
+                </div>
+                <div class="timeline-container right timeline-hidden">
+                    <div class="timeline-content">
+                        <h3 class="font-bold text-lg" style="color: var(--secondary-color);">21 de Junho, 2025</h3>
+                        <p class="text-sm italic mb-2" style="color: var(--primary-color);">Primeiro Beijo</p>
+                        <img src="./uploads/2.jpg" alt="Primeira Viagem" class="timeline-image rounded-md mb-2 w-full">
+                        <p>Nos dois com vergonha ksksk, demorou mais saiu 😘</p>
+                    </div>
+                </div>
+                <div class="timeline-container right timeline-hidden">
+                    <div class="timeline-content">
+                        <h3 class="font-bold text-lg" style="color: var(--secondary-color);">13 de Julho, 2025</h3>
+                        <p class="text-sm italic mb-2" style="color: var(--primary-color);">Chá revelação</p>
+                        <img src="./uploads/9.jpg" alt="Primeira Viagem" class="timeline-image rounded-md mb-2 w-full">
+                        <p>Amoo muito esse dia tirando a parte do poste ❤️</p>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="timeline-container left timeline-hidden">
+                    <div class="timeline-content">
+                        <h3 class="font-bold text-lg" style="color: var(--secondary-color);">17 de Agosto, 2025</h3>
+                        <p class="text-sm italic mb-2" style="color: var(--primary-color);">Vôlei</p>
+                        <img src="./uploads/17.jpg" alt="Dia na Praia" class="timeline-image rounded-md mb-2 w-full">
+                        <p>Amoo jogar vôlei com minha princesa 🥰</p>
+                    </div>
+                </div>
+                <div class="timeline-container left timeline-hidden">
+                    <div class="timeline-content">
+                        <h3 class="font-bold text-lg" style="color: var(--secondary-color);">10 de Setembro, 2025</h3>
+                        <p class="text-sm italic mb-2" style="color: var(--primary-color);">Amo ela</p>
+                        <img src="./uploads/12.jpg" alt="Dia na Praia" class="timeline-image rounded-md mb-2 w-full">
+                        <p>Amo ficar ao lado dela 💍</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Botão Exibir Mais -->
+            <div id="timeline-show-more-container" class="text-center mt-8">
+                <button id="timeline-show-more-btn" 
+                        class="bg-gray-800 text-white px-6 py-3 rounded-full shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105">
+                    Exibir Mais
+                </button>
+            </div>
+        </section>
+
+        <!-- Coisas que Amo -->
+        <section class="mt-20 fade-in fade-in-delay-4">
+            <h2 class="text-4xl font-serif font-bold text-center mb-12" style="color: var(--secondary-color);">5 Coisas que Amo em Você</h2>
+            <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+                <!-- Item 1 -->
+                <div class="backdrop-blur-md p-6 rounded-xl shadow-lg flex flex-col items-center text-center" style="background-color: var(--card-bg);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-3" style="color: var(--primary-color);" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                    <p class="text-lg font-semibold" style="color: var(--secondary-color);">Seu Sorriso</p>
+                    <p class="text-sm mt-2 text-gray-300">Que ilumina qualquer lugar e transforma um dia comum em algo especial.</p>
+                </div>
+                <!-- Item 2 -->
+                <div class="backdrop-blur-md p-6 rounded-xl shadow-lg flex flex-col items-center text-center" style="background-color: var(--card-bg);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-3" style="color: var(--primary-color);" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                    <p class="text-lg font-semibold" style="color: var(--secondary-color);">Seu Abraço</p>
+                    <p class="text-sm mt-2 text-gray-300">O lugar onde me sinto seguro e em paz, como se nada mais importasse.</p>
+                </div>
+                <!-- Item 3 -->
+                <div class="backdrop-blur-md p-6 rounded-xl shadow-lg flex flex-col items-center text-center" style="background-color: var(--card-bg);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-3" style="color: var(--primary-color);" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                    <p class="text-lg font-semibold" style="color: var(--secondary-color);">Sua Inteligência</p>
+                    <p class="text-sm mt-2 text-gray-300">A forma como você vê o mundo e me ensina algo novo todos os dias.</p>
+                </div>
+                <!-- Item 4 -->
+                <div class="backdrop-blur-md p-6 rounded-xl shadow-lg flex flex-col items-center text-center" style="background-color: var(--card-bg);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-3" style="color: var(--primary-color);" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                    <p class="text-lg font-semibold" style="color: var(--secondary-color);">Sua Força</p>
+                    <p class="text-sm mt-2 text-gray-300">A maneira como você enfrenta desafios com coragem e determinação.</p>
+                </div>
+                <!-- Item 5 -->
+                <div class="backdrop-blur-md p-6 rounded-xl shadow-lg flex flex-col items-center text-center" style="background-color: var(--card-bg);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-3" style="color: var(--primary-color);" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                    <p class="text-lg font-semibold" style="color: var(--secondary-color);">Seu Jeitinho</p>
+                    <p class="text-sm mt-2 text-gray-300">As pequenas manias e o jeito único que só você tem de ser.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Galeria de Favoritas (Carrossel) -->
+        <section class="mt-20 fade-in fade-in-delay-4 overflow-hidden">
+            <h2 class="text-4xl font-serif font-bold text-center mb-12" style="color: var(--secondary-color);">Galeria de Favoritas</h2>
+            <!-- Swiper -->
+            <div class="swiper-container">
+                <div class="swiper-wrapper items-center">
+                    <div class="swiper-slide"><img src="./uploads/6.jpg" class="timeline-image" alt="Foto favorita 1"></div>
+                    <div class="swiper-slide"><img src="./uploads/8.jpg" class="timeline-image" alt="Foto favorita 2"></div>
+                    <div class="swiper-slide"><img src="./uploads/10a.jpg" class="timeline-image" alt="Foto favorita 3"></div>
+                    <div class="swiper-slide"><img src="./uploads/19a.jpg" class="timeline-image" alt="Foto favorita 3"></div>                   
+                    <div class="swiper-slide"><img src="./uploads/11.jpg" class="timeline-image" alt="Foto favorita 4"></div>
+                    <div class="swiper-slide"><img src="./uploads/4.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/7.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/24.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/5.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/13.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/12.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/1.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/3.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/27.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/16.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/26.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/18.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/17.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/20.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/29.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+                    <div class="swiper-slide"><img src="./uploads/30.jpg" class="timeline-image" alt="Foto favorita 5"></div>
+
+
+                    <!-- Adicione mais slides aqui -->
+                </div>
+                <!-- Adicionar Paginação -->
+                <div class="swiper-pagination"></div>
+                <!-- Adicionar Botões de Navegação -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <!-- Contagem Regressiva e Mensagem Final -->
+        <section class="mt-20 text-center fade-in fade-in-delay-4">
+            <h2 class="text-4xl font-serif font-bold mb-4" style="color: var(--secondary-color);">Até o Próximo Capítulo</h2>
+            <p class="max-w-2xl mx-auto mb-8">Nossa história está só começando. Mal posso esperar por todas as aventuras que ainda vamos viver juntos. A contagem já começou para o nosso próximo aniversário!</p>
+            <div class="max-w-md mx-auto backdrop-blur-md rounded-xl shadow-lg p-6" style="background-color: var(--card-bg);">
+                <p class="text-lg font-semibold mb-2" style="color: var(--secondary-color);">Próximo Aniversário em:</p>
+                <div class="grid grid-cols-4 gap-4 text-center">
+                    <div>
+                        <span id="countdown-days" class="text-3xl font-bold" style="color: var(--primary-color);">0</span>
+                        <span class="block text-xs uppercase">Dias</span>
+                    </div>
+                    <div>
+                        <span id="countdown-hours" class="text-3xl font-bold" style="color: var(--primary-color);">0</span>
+                        <span class="block text-xs uppercase">Horas</span>
+                    </div>
+                    <div>
+                        <span id="countdown-minutes" class="text-3xl font-bold" style="color: var(--primary-color);">0</span>
+                        <span class="block text-xs uppercase">Minutos</span>
+                    </div>
+                    <div>
+                        <span id="countdown-seconds" class="text-3xl font-bold" style="color: var(--primary-color);">0</span>
+                        <span class="block text-xs uppercase">Segundos</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Elemento de áudio (escondido) -->
+    <audio id="audio-player"></audio>
+
+    <!-- Swiper.js Script -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <footer class="mt-20 pt-10 pb-8 text-center" style="background-color: #1D1D1D;">
+        <div class="container mx-auto px-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-4 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+            <p class="text-white text-sm">
+                Feito com todo carinho do mundo para você.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const startDate = new Date('2025-05-25T22:00:00');
+
+        const elements = {
+            years: document.getElementById('years'),
+            months: document.getElementById('months'),
+            days: document.getElementById('days'),
+            hours: document.getElementById('hours'),
+            minutes: document.getElementById('minutes'),
+            seconds: document.getElementById('seconds'),
+            messageBox: document.getElementById('message-box'),
+            messageTitle: document.getElementById('message-title'),
+            messageContent: document.getElementById('message-content'),
+            countdownDays: document.getElementById('countdown-days'),
+            countdownHours: document.getElementById('countdown-hours'),
+            countdownMinutes: document.getElementById('countdown-minutes'),
+            countdownSeconds: document.getElementById('countdown-seconds'),
+        };
+
+        function updateCounter() {
+            const now = new Date();
+            if (now < startDate) {
+                // Se a data ainda não chegou, mostra tudo como 0
+                Object.keys(elements).forEach(key => {
+                    if(elements[key] && ['years', 'months', 'days', 'hours', 'minutes', 'seconds'].includes(key)) {
+                        elements[key].textContent = '0';
+                    }
+                });
+                return;
+            }
+
+            let years = now.getFullYear() - startDate.getFullYear();
+            let months = now.getMonth() - startDate.getMonth();
+            let days = now.getDate() - startDate.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            const diff = now - startDate;
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            elements.years.textContent = years;
+            elements.months.textContent = months;
+            elements.days.textContent = days;
+            elements.hours.textContent = String(hours).padStart(2, '0');
+            elements.minutes.textContent = String(minutes).padStart(2, '0');
+            elements.seconds.textContent = String(seconds).padStart(2, '0');
+
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            let nextAnniversaryYear = now.getFullYear();
+            
+            // Se o aniversário deste ano já passou, calcule para o próximo ano
+            if (now.getMonth() > startDate.getMonth() || (now.getMonth() === startDate.getMonth() && now.getDate() > startDate.getDate())) {
+                nextAnniversaryYear++;
+            }
+
+            const nextAnniversary = new Date(nextAnniversaryYear, startDate.getMonth(), startDate.getDate());
+            const diff = nextAnniversary - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            elements.countdownDays.textContent = days;
+            elements.countdownHours.textContent = String(hours).padStart(2, '0');
+            elements.countdownMinutes.textContent = String(minutes).padStart(2, '0');
+            elements.countdownSeconds.textContent = String(seconds).padStart(2, '0');
+        }
+
+        function showMessage(title, content) {
+            elements.messageTitle.textContent = title;
+            elements.messageContent.textContent = content;
+            elements.messageBox.classList.remove('hidden');
+            elements.messageBox.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMessage() {
+            elements.messageBox.classList.add('hidden');
+            elements.messageBox.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        function createPetals(count) {
+            const container = document.getElementById('petals-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const emojis = ['❤️', '💍', '😘', '😍', '💖', '🥰'];
+
+            for (let i = 0; i < count; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const size = Math.random() * 20 + 15; // Tamanho entre 15px e 35px
+                const left = Math.random() * 100;
+                const animationDuration = Math.random() * 10 + 10; // Duração entre 10s e 20s
+                const delay = -(Math.random() * animationDuration); // Delay negativo para iniciar em posições aleatórias
+
+                petal.style.fontSize = `${size}px`;
+                petal.style.left = `${left}%`;
+                petal.style.animationDuration = `${animationDuration}s`;
+                petal.style.animationDelay = `${delay}s`;
+                container.appendChild(petal);
+            }
+        }
+
+        // --- Lógica do Modal de Imagem (Lightbox) ---
+        const imageModal = document.getElementById('image-modal');
+        const modalContent = document.getElementById('image-modal-content');
+        const closeModalBtn = document.getElementById('image-modal-close');
+
+        document.querySelectorAll('.timeline-image').forEach(image => {
+            image.addEventListener('click', () => {
+                imageModal.classList.remove('hidden');
+                imageModal.classList.add('flex');
+                modalContent.src = image.src;
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        function closeImageModal() {
+            imageModal.classList.add('hidden');
+            imageModal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        closeModalBtn.addEventListener('click', closeImageModal);
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) { // Fecha se clicar no fundo escuro
+                closeImageModal();
+            }
+        });
+
+        // --- Lógica do Botão "Exibir Mais" da Timeline ---
+        const showMoreBtn = document.getElementById('timeline-show-more-btn');
+        const showMoreContainer = document.getElementById('timeline-show-more-container');
+        
+        showMoreBtn.addEventListener('click', () => {
+            document.querySelectorAll('.timeline-hidden').forEach(item => {
+                item.style.display = 'flex';
+            });
+            showMoreContainer.style.display = 'none'; // Esconde o botão depois de clicado
+        });
+
+        // --- Lógica do Player de Música Aleatório ---
+        const audioPlayer = document.getElementById('audio-player');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const seekBar = document.getElementById('seek-bar');
+        const albumArt = document.getElementById('album-art');
+        const songTitle = document.getElementById('song-title');
+        const songArtist = document.getElementById('song-artist');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentTimeEl = document.getElementById('current-time');
+        const totalDurationEl = document.getElementById('total-duration');
+
+        const playlist = [
+            {
+                title: 'Para minha princesa',
+                artist: 'Alice e Murilo',
+                src: './uploads/Vagalumes.mp3', // Substitua pelo caminho da sua música
+                art: './uploads/capa.jpg'    // Substitua pela URL da capa
+            }
+            //{
+            //    title: 'Poesia Acústica #6',
+            //    artist: 'Pineapple StormTv',
+            //    src: './uploads/musica2.mp3',
+            //    art: 'https://i.scdn.co/image/ab67616d0000b273f1e88c7133a99e83616d15c3'
+            //},
+            //{
+            //    title: 'Outra Música',
+            //    artist: 'Outro Artista',
+            //    src: './uploads/musica3.mp3',
+            //    art: 'https://via.placeholder.com/300' // URL de exemplo
+            //}
+        ];
+
+        let currentSongIndex;
+
+        function loadSong(songIndex) {
+            const song = playlist[songIndex];
+            
+            songTitle.textContent = song.title;
+            songArtist.textContent = song.artist;
+            albumArt.src = song.art;
+            audioPlayer.src = song.src;
+            currentSongIndex = songIndex;
+        }
+
+        function playNextSong() {
+            let nextIndex = (currentSongIndex + 1) % playlist.length;
+            loadSong(nextIndex);
+            audioPlayer.play().then(() => updatePlayPauseIcon());
+        }
+
+        function playPrevSong() {
+            let prevIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+            loadSong(prevIndex);
+            audioPlayer.play().then(() => updatePlayPauseIcon());
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                audioPlayer.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        });
+
+        function updatePlayPauseIcon() {
+            if (audioPlayer.paused) {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            } else {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if (audioPlayer.duration) {
+                seekBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            }
+        });
+
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            totalDurationEl.textContent = formatTime(audioPlayer.duration);
+        });
+
+        audioPlayer.addEventListener('play', updatePlayPauseIcon);
+        audioPlayer.addEventListener('pause', updatePlayPauseIcon);
+        seekBar.addEventListener('input', () => audioPlayer.currentTime = (seekBar.value / 100) * audioPlayer.duration);
+        nextBtn.addEventListener('click', playNextSong);
+        prevBtn.addEventListener('click', playPrevSong);
+
+        // --- Inicialização do Carrossel (Swiper) ---
+        function initSwiper() {
+            new Swiper('.swiper-container', {
+                effect: 'coverflow', // Efeito que faz a imagem "ir para o lado"
+                grabCursor: true,
+                centeredSlides: true,
+                slidesPerView: 'auto',
+                coverflowEffect: {
+                    rotate: 50,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true,
+                },
+                pagination: { el: '.swiper-pagination' },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev', },
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCounter();
+            updateCountdown();
+            setInterval(updateCounter, 1000);
+            setInterval(updateCountdown, 1000);
+            createPetals(25);
+            loadSong(Math.floor(Math.random() * playlist.length)); // Carrega uma música aleatória inicialmente
+            initSwiper(); // Inicia o carrossel
+        });
+    </script>
+</body>
+
+</html>
